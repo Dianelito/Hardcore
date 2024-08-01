@@ -1,0 +1,6 @@
+name: HardcorePlugin
+version: 1.0
+Author: Dianelito
+main: hd.dianelito.Hardcore
+api-version: 1.13
+description: Este plugin agregara sistema de vidas y más para una modalidad hardcore

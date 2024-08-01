@@ -1,4 +1,0 @@
-name: Hardcore
-version: '1.0'
-main: com.cazador.hardcoreplugin.HardcorePlugin
-api-version: '1.20'
