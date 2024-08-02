@@ -1,4 +1,5 @@
 #Sugerencia:
 #Por que quieres agregarlo?:
+#Plugin de la sugerencia:
 #
 #Sigue estos pasos y crea un pull request para sugerencias
