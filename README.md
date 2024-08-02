@@ -1,4 +1,4 @@
-Hardcore Beta 1.0
+Hardcore Beta 1.1
 
 OverviewDocumentationVersion HistoryDiscussion
 Native Minecraft Version: 1.20

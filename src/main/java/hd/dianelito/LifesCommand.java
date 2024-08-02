@@ -6,36 +6,46 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class LifesCommand implements CommandExecutor {
 
     private final GameManager gameManager;
-    public static String prefix = "&8[&c&lHardcore&8] ";
+    private final JavaPlugin plugin;
 
-    public LifesCommand(GameManager gameManager) {
+    public LifesCommand(GameManager gameManager, JavaPlugin plugin) {
         this.gameManager = gameManager;
+        this.plugin = plugin;
+    }
+
+    private String getConfigMessage(String path) {
+        return ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("messages." + path));
+    }
+
+    private String formatMessage(String message, String targetName, int amount, int lives) {
+        return message.replace("{player}", targetName).replace("{amount}", String.valueOf(amount)).replace("{lives}", String.valueOf(lives));
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cEste comando solo puede ser ejecutado por un jugador."));
+            sender.sendMessage(getConfigMessage("not_a_player"));
             return true;
         }
 
         Player player = (Player) sender;
 
-        if (args.length < 2) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cUso: /lifes <add|remove|set|get> <jugador> [cantidad]"));
+        if (args.length < 1) {
+            player.sendMessage(getConfigMessage("invalid_action"));
             return true;
         }
 
         String action = args[0].toLowerCase();
-        String targetName = args[1];
+        String targetName = args.length > 1 ? args[1] : "";
         Player targetPlayer = Bukkit.getPlayer(targetName);
 
-        if (targetPlayer == null) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cEl jugador " + targetName + " no está en línea."));
+        if (targetName.isEmpty() && !action.equals("get")) {
+            player.sendMessage(getConfigMessage("invalid_action"));
             return true;
         }
 
@@ -44,7 +54,7 @@ public class LifesCommand implements CommandExecutor {
             try {
                 amount = Integer.parseInt(args[2]);
             } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cCantidad no válida."));
+                player.sendMessage(getConfigMessage("invalid_quantity"));
                 return true;
             }
         }
@@ -52,58 +62,58 @@ public class LifesCommand implements CommandExecutor {
         switch (action) {
             case "add":
                 if (!player.hasPermission("hardcore.lifes.add")) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo tienes permiso para ejecutar este comando."));
+                    player.sendMessage(getConfigMessage("no_permission"));
                     return true;
                 }
                 if (args.length != 3) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cUso correcto: /lifes add <jugador> <cantidad>"));
+                    player.sendMessage(getConfigMessage("usage_add"));
                     return true;
                 }
                 gameManager.addLives(targetName, amount);
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&aSe han añadido " + amount + " &avidas a " + targetName + ". Ahora tiene " + gameManager.getLives(targetName) + " vidas."));
+                player.sendMessage(formatMessage(getConfigMessage("lives_added"), targetName, amount, gameManager.getLives(targetName)));
                 break;
 
             case "remove":
                 if (!player.hasPermission("hardcore.lifes.remove")) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo tienes permiso para ejecutar este comando."));
+                    player.sendMessage(getConfigMessage("no_permission"));
                     return true;
                 }
                 if (args.length != 3) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cUso correcto: /lifes remove <jugador> <cantidad>"));
+                    player.sendMessage(getConfigMessage("usage_remove"));
                     return true;
                 }
                 gameManager.removeLives(targetName, amount);
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&aSe han eliminado " + amount + " &avidas a " + targetName + ". Ahora tiene " + gameManager.getLives(targetName) + " vidas."));
+                player.sendMessage(formatMessage(getConfigMessage("lives_removed"), targetName, amount, gameManager.getLives(targetName)));
                 break;
 
             case "set":
                 if (!player.hasPermission("hardcore.lifes.set")) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo tienes permiso para ejecutar este comando."));
+                    player.sendMessage(getConfigMessage("no_permission"));
                     return true;
                 }
                 if (args.length != 3) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cUso correcto: /lifes set <jugador> <cantidad>"));
+                    player.sendMessage(getConfigMessage("usage_set"));
                     return true;
                 }
                 gameManager.setLives(targetName, amount);
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&aLas vidas de " + targetName + " se han establecido a " + amount + ". Ahora tiene " + gameManager.getLives(targetName) + " vidas."));
+                player.sendMessage(formatMessage(getConfigMessage("lives_set"), targetName, amount, gameManager.getLives(targetName)));
                 break;
 
             case "get":
                 if (!player.hasPermission("hardcore.lifes.get")) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cNo tienes permiso para ejecutar este comando."));
+                    player.sendMessage(getConfigMessage("no_permission"));
                     return true;
                 }
                 if (args.length != 2) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cUso correcto: /lifes get <jugador>"));
+                    player.sendMessage(getConfigMessage("usage_get"));
                     return true;
                 }
                 int lives = gameManager.getLives(targetName);
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + targetName + " &atiene " + lives + " vidas."));
+                player.sendMessage(formatMessage(getConfigMessage("lives_get"), targetName, 0, lives));
                 break;
 
             default:
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cAcción no válida. Usa add, remove, set o get."));
+                player.sendMessage(getConfigMessage("invalid_action"));
                 break;
         }
 

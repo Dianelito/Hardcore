@@ -12,12 +12,18 @@ public class Hardcore extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        gameManager = new GameManager(this);
+        saveDefaultConfig();
+
+        this.gameManager = new GameManager(this);
+        getCommand("lifes").setExecutor(new LifesCommand(gameManager, this));
         getServer().getPluginManager().registerEvents(new DeathListener(gameManager), this);
-        getCommand("lifes").setExecutor(new LifesCommand(gameManager));
-        gameManager.startReviveCheck(); // Inicia el chequeo de revivir jugadores
-        Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&aHardcore Plugin Activado &bVersión&7: " + version));
+
+        // Auto-updater
+        if (getConfig().getBoolean("auto_update.enabled")) {
+            new Updater(this).checkForUpdates();
+        }
     }
+
     @Override
     public void onDisable() {
         Bukkit.getConsoleSender().sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + "&cHardcore Plugin Desactivado"));

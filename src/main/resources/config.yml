@@ -1,0 +1,17 @@
+messages:
+  prefix: "&8[&c&lHardcore&8] "
+  not_a_player: "&cEste comando solo puede ser ejecutado por un jugador."
+  usage_add: "&cUso correcto: /lifes add <jugador> <cantidad>"
+  usage_remove: "&cUso correcto: /lifes remove <jugador> <cantidad>"
+  usage_set: "&cUso correcto: /lifes set <jugador> <cantidad>"
+  usage_get: "&cUso correcto: /lifes get <jugador>"
+  invalid_quantity: "&cCantidad no válida."
+  no_permission: "&cNo tienes permiso para ejecutar este comando."
+  player_not_online: "&cEl jugador {player} no está en línea."
+  lives_added: "&aSe han añadido {amount} vidas a {player}. Ahora tiene {lives} vidas."
+  lives_removed: "&aSe han eliminado {amount} vidas a {player}. Ahora tiene {lives} vidas."
+  lives_set: "&aLas vidas de {player} se han establecido a {amount}. Ahora tiene {lives} vidas."
+  lives_get: "{player} tiene {lives} vidas."
+  invalid_action: "&cAcción no válida. Usa add, remove, set o get."
+auto_update:
+  enabled: true
